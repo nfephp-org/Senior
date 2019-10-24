@@ -1,0 +1,57 @@
+{
+    "name": "nfephp-org/senior",
+    "type": "library",
+    "description": "API para geração e comunicação com o sistema Senior.",
+    "keywords": ["senior","actuary"],
+    "homepage": "http://www.actuary.com.br",
+    "license": ["GPL-3.0+","LGPL-3.0+", "MIT"],
+    "authors": [
+        {
+            "name": "Roberto L. Machado",
+            "email": "linux.rlm@gmail.com.br",
+            "role": "Developer"
+        },
+        {
+            "name": "Rodrigo Traleski",
+            "email": "rodrigo@actuary.com.br",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : ">=7.2",
+        "ext-dom": "*",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-zlib": "*",
+        "ext-SimpleXML": "*",
+        "ext-date":"*",
+        "monolog/monolog": "^2.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.5",
+        "phpunit/phpunit": "^8.4",
+        "scrutinizer/ocular": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+          "NFePHP\\Senior\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NFePHP\\Senior\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "phpcbf": "vendor/bin/phpcbf --standard=psr2 src/",
+        "phpcs": "vendor/bin/phpcs --standard=psr2 src/",
+        "phpstan": "vendor/bin/phpstan analyse src/ --level 7"
+    },
+    "extra": {
+        "branch-alias": {
+            "v0.1.x": "0.1.x-dev"
+        }
+    },
+    "minimum-stability": "stable"
+}
