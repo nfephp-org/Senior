@@ -46,12 +46,7 @@ class Response
     protected static function select($xml)
     {
         $infolist = [
-            'infoServidor',
-            'infoDependente',
-            'infoContribuicao',
-            'infoContribuicaoAnalitica',
-            'infoAfastamento',
-            'infoTempoContribuicao'
+            
         ];
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = false;
@@ -84,5 +79,4 @@ class Response
         $std = json_decode($json);
         return str_replace('{}', '""', json_encode($std, JSON_PRETTY_PRINT));
     }
-
 }

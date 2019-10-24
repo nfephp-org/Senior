@@ -2,6 +2,9 @@
 
 namespace NFePHP\Senior;
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 class Senior
 {
 
@@ -9,34 +12,80 @@ class Senior
     protected $urls = [
         "joinville" => "https://seniorws.joinville.sc.gov.br/g5-senior-services/rubi_Syncintegracaoactuary"
     ];
-
+    private $soaptimeout = 10;
+    private $tpAmb = 1;
+    private $debugmode = false;
     private $city;
     private $user;
     private $password;
     private $encryption;
     private $url;
+    private $logger;
 
     public function __construct($user, $password, $city, $encryption)
     {
+        $this->logger = new Logger('senior');
+        $this->logger->pushHandler(
+            new StreamHandler(__DIR__ . '/../storage/log/app.log', Logger::DEBUG)
+        );
+        
         $this->city = strtolower($city);
         $this->user = $user;
         $this->password = $password;
         $this->encryption = $encryption;
         if (!array_key_exists($this->city, $this->urls)) {
-            throw new Exception('Essa cidade não foi inclusa no projeto ainda.');
+            $msg = 'Essa cidade não foi inclusa no projeto ainda.';
+            $this->logger->error($msg);
+            throw new \Exception($msg);
         }
         $this->url = $this->urls[$this->city];
+    }
+    
+    /**
+     * Set environment 2 to tests and 1 to production
+     * @param int $tpAmb
+     * @return int
+     */
+    public function setAmbiente($tpAmb = null)
+    {
+        if (!empty($tpAmb) && ($tpAmb == 1 || $tpAmb == 2)) {
+            $this->tpAmb = $tpAmb;
+        }
+        return $this->tpAmb;
+    }
+    
+    /**
+     * Set debugmod
+     * When debugmod = true, files with soap content will be saved for analises
+     * @param bool $flag
+     * @return void
+     */
+    public function setDebugMode($flag = true)
+    {
+        if (!empty($flag)) {
+            $this->debugmode = $flag;
+        }
+        return $this->debugmode;
+    }
+    
+    /**
+     * Set soap timeout parameter in seconds
+     * @param int $sec
+     * @return void
+     */
+    public function setSoapTimeOut($sec = 10)
+    {
+        if (!empty($sec)) {
+            $this->soaptimeout = $sec;
+        }
+        return $this->soaptimeout;
     }
 
     /**
      * Dados de afastamento
      *
-     * @param string $eabremp       Opcional    Abrangência de Empresa. Formato Texto, mascara A[99].
-     * @param string $eabrtcl       Opcional	Abrangência de Tipo de Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrcad       Opcional	Abrangência do Cadastro/Matricula do Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrcodloc    Opcional	Abrangência do Local do Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrVin	    Opcional	Abrangência do Vinculo do Colaborador. Formato Texto, mascara A[99].
-     * @return void
+     * @param \stdClass $std
+     * @return string
      */
     public function afastamento(\stdClass $std)
     {
@@ -53,15 +102,12 @@ class Senior
     }
 
     /**
-     * 
-     * @param string $edatref       Opcional	Data de Referência. Formato Texto no padrão DD/MM/YYYY.
-     * @param string $eabremp       Opcional	Abrangência de Empresa. Formato Texto, mascara A[99].
-     * @param string $eabrtcl       Opcional	Abrangência de Tipo de Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrcad       Opcional	Abrangência do Cadastro/Matricula do Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrcodloc    Opcional	Abrangência do Local do Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrVin       Opcional	Abrangência do Vinculo do Colaborador. Formato Texto, mascara A[99].
+     * Dados de dependentes
+     *
+     * @param \stdClass $std
+     * @return string
      */
-    public function caddep($possible, \stdClass $std)
+    public function caddep(\stdClass $std)
     {
         $action = 'caddep';
         $possible = [
@@ -72,12 +118,17 @@ class Senior
             'EAbrCodLoc',
             'EAbrVin'
         ];
-        $parameters = $this->buildParams($std);
+        $parameters = $this->buildParams($possible, $std);
         return $this->send($action, $parameters);
-
     }
 
-    public function cadservidor($possible, \stdClass $std)
+    /**
+     * Dados de servidores
+     *
+     * @param \stdClass $std
+     * @return string
+     */
+    public function cadservidor(\stdClass $std)
     {
         $action = 'cadservidor';
         $possible = [
@@ -88,21 +139,15 @@ class Senior
             'EAbrCodLoc',
             'EAbrVin'
         ];
-        $parameters = $this->buildParams($std);
+        $parameters = $this->buildParams($possible, $std);
         return $this->send($action, $parameters);
-
     }
     
     /**
-     * 
-     * @param string $etipsal       Obrigatório Tipo de Salário , opções : "1-Salário Integral" , "2-13º Salário" , "3-Salário Extraordinário" , "4-Auxílio Doença" e "5-Licença Maternidade" ; Formato Texto U.
-     * @param string $edatref       Opcional    Data de Referência. Formato Texto no padrão DD/YYYY.
-     * @param string $eeverser      Opcional    Abrangência para Eventos de Contribuição do Servidor , (opcional) Formato Texto A[99].
-     * @param string $eabremp       Opcional    Abrangência de Empresa. Formato Texto, mascara A[99].
-     * @param string $eabrtcl       Opcional    Abrangência de Tipo de Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrcad       Opcional    Abrangência do Cadastro/Matricula do Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrcodloc    Opcional    Abrangência do Local do Colaborador. Formato Texto, mascara A[99].
-     * @param string $eabrVin       Opcional    Abrangência do Vinculo do Colaborador. Formato Texto, mascara A[99].
+     * Dados de salario contribuição
+     *
+     * @param \stdClass $std
+     * @return string
      */
     public function salcontrib(\stdClass $std)
     {
@@ -122,10 +167,10 @@ class Senior
     }
     
     /**
-     * Constroi a tag entradas
-     * 
-     * @param array $possible
-     * @param \stdClass $std
+     * Construtor da tag entrada
+     *
+     * @param array $possible campos possiveis
+     * @param \stdClass $std dados
      * @return string
      */
     protected function buildParams(array $possible, \stdClass $std)
@@ -146,7 +191,7 @@ class Senior
                 . $filter
                 . "</entrada>";
         }
-        return $parameters;   
+        return $parameters;
     }
     
     /**
@@ -182,7 +227,7 @@ class Senior
             'Expect: 100-continue',
             'Connection: Keep-Alive'
         ];
-        die;
+        
         $txtheaders = implode("\n", $headers);
         
         try {
@@ -220,9 +265,10 @@ class Senior
             $responseHead = substr($response, 0, $headsize);
             $responseBody = substr($response, $headsize);
             if (substr($response, -3) !== substr($responseBody, -3)) {
-                throw new \RuntimeException(
-                    'A terminação dos dados compactados está diferente! Não foi possivel extrair os dados.'
-                );
+                $msg = 'A terminação dos dados compactados está diferente!'
+                    . ' Não foi possivel extrair os dados.';
+                $this->logger->error($msg);
+                throw new \RuntimeException($msg);
             }
             $marker = substr($responseBody, 0, 3);
             //identify compress body in gzip deflate
@@ -236,15 +282,39 @@ class Senior
                 $this->debugmode
             );
         } catch (\Exception $e) {
-            throw new \RuntimeException($e->getMessage());
+            $msg = $e->getMessage();
+            $this->logger->error($msg);
+            throw new \RuntimeException($msg);
         }
         if ($this->soaperror != '') {
-            throw new \RuntimeException($this->soaperror);
+            $msg = $this->soaperror;
+            $this->logger->error($msg);
+            throw new \RuntimeException($msg);
         }
         if ($httpcode != 200) {
-            throw new \RuntimeException($responseHead . '\n' . $responseBody);
+            $msg = $responseHead . '\n' . $responseBody;
+            $this->logger->error($msg);
+            throw new \RuntimeException($msg);
         }
         return $responseBody;
     }
-
+    
+    /**
+     * Save request envelope and response for debug reasons
+     *
+     * @param string $action
+     * @param string $request
+     * @param string $response
+     * @return void
+     */
+    protected function saveDebugFiles($action, $request, $response, $flag = false)
+    {
+        if (!$flag) {
+            return;
+        }
+        $tempdir = realpath(__DIR__ . "/../storage/debug");
+        $num = date('mdHis');
+        file_put_contents($tempdir . "/req_" . $action . "_" . $num . ".txt", $request);
+        file_put_contents($tempdir . "/res_" . $action . "_" . $num . ".txt", $response);
+    }
 }
