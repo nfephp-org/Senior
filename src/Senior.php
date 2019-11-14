@@ -95,7 +95,9 @@ class Senior
             'EAbrTcl',
             'EAbrCad',
             'EAbrCodLoc',
-            'EAbrVin'
+            'EAbrVin',
+            'numeroPagina',
+            'registrosPorPagina'
         ];
         $parameters = $this->buildParams($possible, $std);
         return $this->send($action, $parameters);
@@ -116,7 +118,9 @@ class Senior
             'EAbrTcl',
             'EAbrCad',
             'EAbrCodLoc',
-            'EAbrVin'
+            'EAbrVin',
+            'numeroPagina',
+            'registrosPorPagina'
         ];
         $parameters = $this->buildParams($possible, $std);
         return $this->send($action, $parameters);
@@ -137,7 +141,9 @@ class Senior
             'EAbrTcl',
             'EAbrCad',
             'EAbrCodLoc',
-            'EAbrVin'
+            'EAbrVin',
+            'numeroPagina',
+            'registrosPorPagina'
         ];
         $parameters = $this->buildParams($possible, $std);
         return $this->send($action, $parameters);
@@ -160,7 +166,9 @@ class Senior
             'EAbrTcl',
             'EAbrCad',
             'EAbrCodLoc',
-            'EAbrVin'
+            'EAbrVin',
+            'numeroPagina',
+            'registrosPorPagina'
         ];
         $parameters = $this->buildParams($possible, $std);
         return $this->send($action, $parameters);
