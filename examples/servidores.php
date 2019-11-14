@@ -57,9 +57,11 @@ try {
     $std = (object)[];
 
     $resp = $sen->cadservidor($std);
-
-    header('Content-type: text/xml; charset=UTF-8');
-    echo $resp;
+    $txt = Response::toJson($xml); 
+    //header('Content-type: text/xml; charset=UTF-8');
+    echo "<pre>";
+    echo $txt;
+    echo "<pre>";
     
 } catch (\Exception $e) {
     echo $e->getMessage();
