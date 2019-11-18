@@ -82,7 +82,7 @@ class Senior
     }
     
     /**
-     * 
+     *
      * @param \stdClass $std
      * @return string
      */
