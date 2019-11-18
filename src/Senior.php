@@ -295,17 +295,7 @@ class Senior
 
             $responseHead = substr($response, 0, $headsize);
             $responseBody = substr($response, $headsize);
-            if (substr($response, -3) !== substr($responseBody, -3)) {
-                $msg = 'A terminação dos dados compactados está diferente!'
-                    . ' Não foi possivel extrair os dados.';
-                $this->logger->error($msg);
-                throw new \RuntimeException($msg);
-            }
-            $marker = substr($responseBody, 0, 3);
-            //identify compress body in gzip deflate
-            if ($marker === chr(0x1F) . chr(0x8B) . chr(0x08)) {
-                $responseBody = gzdecode($responseBody);
-            }
+            $responseBody = str_replace("'", '"', $responseBody);
             $this->saveDebugFiles(
                 $action,
                 $txtheaders . "\n" . $envelope,
