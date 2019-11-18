@@ -80,6 +80,28 @@ class Senior
         }
         return $this->soaptimeout;
     }
+    
+    /**
+     * 
+     * @param \stdClass $std
+     * @return string
+     */
+    public function listaMatriculas(\stdClass $std)
+    {
+        $action = 'listaMatriculas';
+        $possible = [
+            'EDatRef',
+            'EAbrEmp',
+            'EAbrTcl',
+            'EAbrCad',
+            'EAbrCod',
+            'EAbrVin',
+            'numeroPagina',
+            'registrosPorPagina'
+        ];
+        $parameters = $this->buildParams($possible, $std);
+        return $this->send($action, $parameters);
+    }
 
     /**
      * Dados de afastamento
@@ -91,6 +113,7 @@ class Senior
     {
         $action = 'afastamento';
         $possible = [
+            'EDatRef',
             'EAbrEmp',
             'EAbrTcl',
             'EAbrCad',
@@ -159,8 +182,8 @@ class Senior
     {
         $action = 'salcontrib';
         $possible = [
-            'ETipSal',
             'EDatRef',
+            'ETipSal',
             'EEverSer',
             'EAbrEmp',
             'EAbrTcl',
@@ -224,7 +247,7 @@ class Senior
             . "<soapenv:Header/>"
             . "<soapenv:Body>";
         $envelope .= $message . "</soapenv:Body></soapenv:Envelope>";
-
+              
         $contentLength = strlen($envelope);
         $headers = [
             'User-Agent: PHP-SOAP',

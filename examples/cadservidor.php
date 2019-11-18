@@ -13,8 +13,9 @@ try {
     $encriptacao = 0;
 
     $sen = new Senior($user, $password, $cidade, $encriptacao);
+    //em desenvolvimento pode gravar as mensagens para debug
     $sen->setDebugMode(true);
-    
+   
     $std = (object)[
       'EDatRef' => '10/2019',
       'EAbrEmp' => '2',
@@ -23,7 +24,8 @@ try {
       'numeroPagina' => 1,
       'registrosPorPagina' => 50 
    ];
-    $resp = $sen->afastamento($std);
+
+    $resp = $sen->cadservidor($std);
     
     //para ver o retorno em xml use as duas linhas abaixo
     header('Content-type: text/xml; charset=UTF-8');

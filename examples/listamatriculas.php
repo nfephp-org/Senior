@@ -13,17 +13,21 @@ try {
     $encriptacao = 0;
 
     $sen = new Senior($user, $password, $cidade, $encriptacao);
+    //em desenvolvimento pode gravar as mensagens para debug
     $sen->setDebugMode(true);
     
     $std = (object)[
-      'EDatRef' => '10/2019',
-      'EAbrEmp' => '2',
-      'EAbrTcl' => '1',
-      'EAbrVin' => '5',
-      'numeroPagina' => 1,
-      'registrosPorPagina' => 50 
-   ];
-    $resp = $sen->afastamento($std);
+        'EDatRef' => '10/2019', //OPCIONAL MM/YYYY ou DD/MM/YYYY
+        'EAbrEmp' => '2', //OBRIGATORIO ex. 2 - IPREVILLE 
+        'EAbrTcl' => '1',//OPCIONAL ex. 1 - Empregado 
+        'EAbrCad' => null, //OPCIONAL
+        'EAbrCod' => null, //OPCIONAL
+        'EAbrVin' => '5',//OPCIONAL  5 - Estatutário Efetivo 
+        'numeroPagina' => '1',
+        'registrosPorPagina' => '50'
+    ];
+
+    $resp = $sen->listaMatriculas($std);
     
     //para ver o retorno em xml use as duas linhas abaixo
     header('Content-type: text/xml; charset=UTF-8');
@@ -35,6 +39,7 @@ try {
     //echo "<pre>";
     //echo $txt;
     //echo "</pre>";
+    
     
 } catch (\Exception $e) {
     echo $e->getMessage();
