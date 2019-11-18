@@ -2,7 +2,7 @@
 
 **API PHP para integração com o [Sistema Aturial Senior](https://documentacao.senior.com.br//)**
 
-*Senior* é um framework em PHP, que permite a integração de um aplicativo com os
+*Senior* é uma biblioteca em PHP, que permite a integração de um aplicativo com os
 serviços dos webservices providos pelo Sistema Senior, realizando a montagem
 das mensagens SOAP.
 
@@ -28,14 +28,14 @@ das mensagens SOAP.
 A API pode ser instalada por linha de comando com o composer
 
 ```
-composer require nfephp-org/senior
+composer require nfephp-org/senior:dev-master
 ```
 
 Ou colocando como dependência diretamente no composer.json do seu aplicativo:
 
 ```json
     "require": {
-        "nfephp-org/senior" : "^0.1"
+        "nfephp-org/senior" : "dev-master"
     },
 ```
 
@@ -45,13 +45,11 @@ Ou colocando como dependência diretamente no composer.json do seu aplicativo:
 - *php-curl* CURL module for PHP
 - *php-xml* DOM, SimpleXML, WDDX, XML, and XSL module for PHP
 - *php-json* JSON module for PHP
-- *php-zlib* CORE DEFAULT
 - *php-date* CORE DEFAULT
 
 ## USO
 
-Para usar você pode ver os exemplos na pasta exemples.
-
+Para usar você pode ver os exemplos na pasta examples.
 
 
 ## CREDITOS
