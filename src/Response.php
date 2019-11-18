@@ -20,6 +20,11 @@ class Response
         $dom->formatOutput = false;
         $dom->loadXML($xml);
         $group = [];
+        $saidas = count($dom->getElementsByTagName('saida'));
+        if ($saidas == 0) {
+            $erro = $dom->getElementsByTagName('erroExecucao')->item(0)->nodeValue;
+            throw new Exception("Ocorreu erro! Não foram retornados dados. mensagem: [{$erro}]");
+        }
         foreach ($dom->getElementsByTagName('saida') as $node) {
             $data = [];
             foreach ($node->childNodes as $child) {
